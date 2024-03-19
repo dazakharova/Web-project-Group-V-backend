@@ -1,8 +1,11 @@
 const express = require('express')
+const postsRouter = require('./routes/posts')
 
 const app = express()
 
 const PORT = 3001
+
+app.use('/api/posts', postsRouter)
 
 
 app.listen(PORT)
