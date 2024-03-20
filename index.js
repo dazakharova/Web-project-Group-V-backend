@@ -4,6 +4,8 @@ const commentsRouter = require('./routes/comments')
 
 const app = express()
 
+app.use(express.json())
+
 const PORT = 3001
 
 app.use('/api/posts', postsRouter)

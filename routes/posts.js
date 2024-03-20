@@ -1,39 +1,62 @@
 const postsRouter = require('express').Router()
+const { query } = require('../helpers/db.js')
 
-const posts = [] // temporary storage for posts for testing until database is created
 
-postsRouter.get('/', (request, response) => {
-    response.send(posts)
+postsRouter.get('/', async(request, response) => {
+    try {
+        const result = await query('select * from posts')
+        const rows = result.rows ? result.rows : []
+        console.log(rows)
+        response.status(200).json(rows)
+    } catch (error) {
+        console.error(error)
+        response.statusMessage = error
+        response.status(500).json({ error: error })
+    }
 })
 
-postsRouter.post('/', (request, response) => {
-    const body = request.body
+postsRouter.post('/', async(request, response) => {
+    const { user_id, title, body } = request.body
 
-    const newPost = { "post_id": posts.length + 1, "user_id": 0, "title": body.title, "body": body.body, "likes_number": 0}
-
-    posts.push(newPost)
-    response.status(200)
+    try {
+        const result = await query('insert into posts (user_id, title, body) values ($1, $2, $3) returning *',
+            [user_id, title, body])
+        console.error(result.rows[0].id)
+        response.status(200).json({ id: result.rows[0].id})
+    } catch (error) {
+        console.error(error)
+        response.statusMessage = error
+        response.status(500).json({ error: error })
+    }
 })
 
-postsRouter.delete('/:id', (request, response) => {
-    const post_id = request.params.id
+postsRouter.delete('/:id', async(request, response) => {
+    const post_id = parseInt(request.params.id)
 
-    posts = posts.filter(post => post.post_id !== post_id)
+    try {
+        const result = await query('delete from posts where id = $1',
+            [post_id])
+        response.status(200).json({ id: post_id })
+    } catch (error) {
+        console.error(error)
+        response.statusMessage = error
+        response.status(500).json({ error: error })
+    }
 })
 
-postsRouter.put('/:id', (request, response) => {
-    const post_id = request.params.id
-    const body = request.body
+postsRouter.put('/:id', async(request, response) => {
+    const post_id = parseInt(request.params.id)
+    const { title, body } = request.body
 
-    posts = posts.map(post => {
-        if (post.post_id === post_id) {
-            post.title = body.title
-            post.body = body.body
-            post.likes = body.likes
-        }
-    })
-
-    response.status(201)
+    try {
+        const result = await query('update posts set title = $1, body = $2 where id = $3 returning *',
+            [title, body, post_id])
+        response.status(200).json(result.rows[0])
+    } catch (error) {
+        console.error(error)
+        response.statusMessage = error
+        response.status(500).json({ error: error })
+    }
 })
 
 module.exports = postsRouter
