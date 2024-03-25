@@ -7,7 +7,7 @@ use journey_junction;
 create table users (
     id serial primary key,
     username varchar(30) not null unique,
-    password char(64) not null
+    password varchar(64) not null
 );
 
 create table posts (
