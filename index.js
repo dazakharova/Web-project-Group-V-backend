@@ -1,15 +1,15 @@
 const express = require('express')
 const postsRouter = require('./routes/posts')
-const commentsRouter = require('./routes/comments')
+const commentsRouter = require('./routes/comment')
 
 const app = express()
 
 app.use(express.json())
 
-const PORT = 3001
+const PORT = 3003
 
 app.use('/api/posts', postsRouter)
-app.use('/api/posts/:postId/comments', commentsRouter) 
+app.use('/api/posts/comments', commentsRouter) 
 
 app.listen(PORT)
 console.log(`listening to port ${PORT}`)
