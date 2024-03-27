@@ -79,6 +79,26 @@ authRouter.post('/logout', (request, response) => {
     response.status(200).send({ message: 'Logged out successfully' });
 })
 
+authRouter.get('/profile', authenticateToken, async(request, response) => {
+    try {
+        const userId = request.user.userId
+
+        // Get user's posts
+        const postsResult = await query('select * from posts where user_id = $1', [userId])
+
+        // Get comments for each post
+        const postsWithComments = await Promise.all(postsResult.rows.map(async (post) => {
+            const commentsResult = await query('select * from comments where post_id = $1', [post.id])
+            return {...post, comments: commentsResult.rows} // returns array, each object of it has post's properties and property 'comments' inside which there are comments' properties
+        }))
+
+        response.status(200).json({ posts: postsWithComments })
+    } catch (error) {
+        console.error('Profile data fetch error:', error)
+        response.status(500).send({ message: 'Internal server error' })
+    }
+})
+
 // Middleware to authenticate and authorize users
 const authenticateToken = (request, response, next) => {
     const authHeader = request.headers['authorization'];
