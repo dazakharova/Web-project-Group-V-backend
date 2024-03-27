@@ -72,5 +72,32 @@ authRouter.post('/login', async(request, response) => {
     }
 })
 
+authRouter.post('/logout', (request, response) => {
+    // Set the JWT cookie to a past expiration date, clearing it
+    response.cookie('token', '', { expires: new Date(0) });
+
+    response.status(200).send({ message: 'Logged out successfully' });
+})
+
+// Middleware to authenticate and authorize users
+const authenticateToken = (request, response, next) => {
+    const authHeader = request.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (token == null) return res.sendStatus(401); // If no token, deny access
+
+    jwt.verify(token, process.env.JWT_SECRET, (error, user) => {
+        if (error) return response.sendStatus(403); // If token is not valid or expired
+        request.user = user;
+        next();
+    });
+};
+
+// Example of protecting a route
+// authRouter.get('/protected', authenticateToken, (request, response) => {
+//     response.send('This is a protected route.');
+// });
+
+
 
 module.exports = authRouter
