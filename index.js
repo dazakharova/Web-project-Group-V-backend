@@ -1,6 +1,7 @@
 const express = require('express')
 const postsRouter = require('./routes/posts')
-const commentsRouter = require('./routes/comment')
+const commentsRouter = require('./routes/comments')
+const authRouter = require('./routes/auth')
 
 const app = express()
 

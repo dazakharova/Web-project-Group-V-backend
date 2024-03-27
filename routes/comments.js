@@ -5,7 +5,7 @@ commentRouter.get('/:postId/comments', async (req, res) => {
   try{
     const postId = req.params.postId;
     const comments = await query(
-      'SELECT * FROM comments WHERE post_id = ?',
+      'SELECT * FROM comments WHERE post_id = $1',
       [postId]
     );
     res.send(comments);
@@ -19,10 +19,10 @@ commentRouter.get('/:postId/comments', async (req, res) => {
 commentRouter.post('/:postId/comments', async (req, res) => {
     try{
         const postId = req.params.postId;
-        const { content } = req.body;
+        const { user_id, post_id, content } = req.body;
         const comment = await query(
-        'INSERT INTO comments (post_id, content) VALUES (?, ?)',
-        [postId, content]
+        'INSERT INTO comments (user_id, post_id, content) VALUES ($1, $2, $3)',
+        [user_id, post_id, content]
         );
         res.send(comment);
     } catch (error) {
@@ -37,7 +37,7 @@ commentRouter.delete('/:postId/comments/:commentId', async (req, res) => {
         const postId = req.params.postId;
         const commentId = req.params.commentId;
         const comment = await query(
-        'DELETE FROM comments WHERE post_id = ? AND id = ?',
+        'DELETE FROM comments WHERE post_id = $1 AND id = $2',
         [postId, commentId]
         );
         res.send(comment);
@@ -54,7 +54,7 @@ commentRouter.put('/:postId/comments/:commentId', async (req, res) => {
         const commentId = req.params.commentId;
         const { content } = req.body;
         const comment = await query(
-        'UPDATE comments SET content = ? WHERE post_id = ? AND id = ?',
+        'UPDATE comments SET content = $1 WHERE post_id = $2 AND id = $3',
         [content, postId, commentId]
         );
         res.send(comment);
