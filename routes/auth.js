@@ -3,6 +3,20 @@ const jwt = require('jsonwebtoken')
 const authRouter = require('express').Router()
 const { query } = require('../helpers/db.js')
 
+// Middleware to authenticate and authorize users
+const authenticateToken = (request, response, next) => {
+    const authHeader = request.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (token == null) return res.sendStatus(401); // If no token, deny access
+
+    jwt.verify(token, process.env.JWT_SECRET, (error, user) => {
+        if (error) return response.sendStatus(403); // If token is not valid or expired
+        request.user = user;
+        next();
+    });
+};
+
 authRouter.get('/test', (req, res) => res.send('Test route is working'));
 
 
@@ -97,20 +111,6 @@ authRouter.get('/profile', authenticateToken, async(request, response) => {
         response.status(500).send({ message: 'Internal server error' })
     }
 })
-
-// Middleware to authenticate and authorize users
-const authenticateToken = (request, response, next) => {
-    const authHeader = request.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (token == null) return res.sendStatus(401); // If no token, deny access
-
-    jwt.verify(token, process.env.JWT_SECRET, (error, user) => {
-        if (error) return response.sendStatus(403); // If token is not valid or expired
-        request.user = user;
-        next();
-    });
-};
 
 // Example of protecting a route
 // authRouter.get('/protected', authenticateToken, (request, response) => {
