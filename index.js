@@ -11,7 +11,7 @@ const PORT = 3001
 
 app.use('/api/posts', postsRouter)
 app.use('/auth', authRouter)
-app.use('/api/posts/:postId/comments', commentsRouter)
+app.use('/api/comments', commentsRouter)
 
 app.listen(PORT)
 console.log(`listening to port ${PORT}`)
