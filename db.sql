@@ -7,7 +7,9 @@ use journey_junction;
 create table users (
     id serial primary key,
     username varchar(30) not null unique,
-    password varchar(64) not null
+    password varchar(64) not null,
+    bio text,
+    profile_photo bytea
 );
 
 create table posts (
@@ -15,6 +17,7 @@ create table posts (
     user_id integer,
     title varchar(255) not null,
     body text not null,
+    picture bytea,
     created_at timestamp with time zone not null default current_timestamp,
     likes_number integer not null default 0,
     foreign key (user_id) references users(id)
@@ -29,6 +32,14 @@ create table comments (
     foreign key (post_id) references posts(id) on delete cascade,
     foreign key (user_id) references users(id)
 );
+
+create table likes (
+    user_id integer,
+    post_id integer,
+    primary key (user_id, post_id),
+    foreign key (user_id) references users(id),
+    foreign key (post_id) references posts(id) on delete cascade
+)
 
 -- Inserting test values into the users table
 insert into users (username, password) values ('user1', 'password_for_user1');
