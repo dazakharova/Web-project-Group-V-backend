@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+require('dotenv').config()
 const authRouter = require('express').Router()
 const { query } = require('../helpers/db.js')
 
@@ -8,7 +9,7 @@ const authenticateToken = (request, response, next) => {
     const authHeader = request.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-    if (token == null) return res.sendStatus(401); // If no token, deny access
+    if (token == null) return response.sendStatus(401); // If no token, deny access
 
     jwt.verify(token, process.env.JWT_SECRET, (error, user) => {
         if (error) return response.sendStatus(403); // If token is not valid or expired
