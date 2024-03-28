@@ -30,6 +30,14 @@ create table comments (
     foreign key (user_id) references users(id)
 );
 
+create table likes (
+    user_id integer,
+    post_id integer,
+    primary key (user_id, post_id),
+    foreign key (user_id) references users(id),
+    foreign key (post_id) references posts(id) on delete cascade
+)
+
 -- Inserting test values into the users table
 insert into users (username, password) values ('user1', 'password_for_user1');
 insert into users (username, password) values ('user2', 'password_for_user2');
