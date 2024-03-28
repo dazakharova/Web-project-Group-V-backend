@@ -17,6 +17,7 @@ create table posts (
     user_id integer,
     title varchar(255) not null,
     body text not null,
+    picture bytea,
     created_at timestamp with time zone not null default current_timestamp,
     likes_number integer not null default 0,
     foreign key (user_id) references users(id)
